@@ -1,0 +1,51 @@
+services:
+  authservice.api:
+    build:
+      context: ./fabrika_back
+      dockerfile: AuthService.Api/Dockerfile.dev
+    container_name: fabrika-auth-dev
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    ports:
+      - "5001:8080"
+    volumes:
+      - ./fabrika_back:/src
+      - auth_nuget:/root/.nuget/packages
+
+  bff.api:
+    build:
+      context: ./fabrika_back
+      dockerfile: Bff.Api/Dockerfile.dev
+    container_name: fabrika-bff-dev
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    ports:
+      - "5002:8080"
+    volumes:
+      - ./fabrika_back:/src
+      - bff_nuget:/root/.nuget/packages
+
+  fabrika.front:
+    build:
+      context: ./fabrika_front
+      dockerfile: Dockerfile.dev
+    container_name: fabrika-front-dev
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./fabrika_front:/app
+      - front_node_modules:/app/node_modules
+    depends_on:
+      - authservice.api
+      - bff.api
+
+volumes:
+  auth_nuget:
+  bff_nuget:
+  front_node_modules:

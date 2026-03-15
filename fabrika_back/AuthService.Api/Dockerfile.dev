@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+WORKDIR /src
+
+COPY ["AuthService.Api/AuthService.Api.csproj", "AuthService.Api/"]
+COPY ["AuthService.Core/AuthService.Core.csproj", "AuthService.Core/"]
+COPY ["AuthService.Infrastructure/AuthService.Infrastructure.csproj", "AuthService.Infrastructure/"]
+RUN dotnet restore "AuthService.Api/AuthService.Api.csproj"
+
+COPY . .
+WORKDIR /src/AuthService.Api
+EXPOSE 8080
+CMD ["dotnet", "watch", "run", "--no-launch-profile", "--urls", "http://0.0.0.0:8080"]
